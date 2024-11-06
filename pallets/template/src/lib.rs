@@ -88,9 +88,7 @@ pub mod pallet {
 
 	/// A struct to store a single block-number. Has all the right derives to store it in storage.
 	/// <https://paritytech.github.io/polkadot-sdk/master/polkadot_sdk_docs/reference_docs/frame_storage_derives/index.html>
-	#[derive(
-		Encode, Decode, MaxEncodedLen, TypeInfo, CloneNoBound, PartialEqNoBound, DefaultNoBound,
-	)]
+	#[derive(Encode, Decode, MaxEncodedLen, TypeInfo, CloneNoBound, PartialEqNoBound, DefaultNoBound)]
 	#[scale_info(skip_type_params(T))]
 	pub struct CompositeStruct<T: Config> {
 		/// A block number.

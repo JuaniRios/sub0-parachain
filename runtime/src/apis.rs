@@ -42,9 +42,8 @@ use sp_version::RuntimeVersion;
 
 // Local module imports
 use super::{
-	AccountId, Balance, Block, ConsensusHook, Executive, InherentDataExt, Nonce, ParachainSystem,
-	Runtime, RuntimeCall, RuntimeGenesisConfig, SessionKeys, System, TransactionPayment,
-	SLOT_DURATION, VERSION,
+	AccountId, Balance, Block, ConsensusHook, Executive, InherentDataExt, Nonce, ParachainSystem, Runtime, RuntimeCall,
+	RuntimeGenesisConfig, SessionKeys, System, TransactionPayment, SLOT_DURATION, VERSION,
 };
 
 // we move some impls outside so we can easily use them with `docify`.
@@ -55,10 +54,7 @@ impl Runtime {
 	}
 
 	#[docify::export]
-	fn impl_can_build_upon(
-		included_hash: <Block as BlockT>::Hash,
-		slot: cumulus_primitives_aura::Slot,
-	) -> bool {
+	fn impl_can_build_upon(included_hash: <Block as BlockT>::Hash, slot: cumulus_primitives_aura::Slot) -> bool {
 		ConsensusHook::can_build_upon(included_hash, slot)
 	}
 }

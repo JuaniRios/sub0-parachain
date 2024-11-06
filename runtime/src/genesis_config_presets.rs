@@ -1,8 +1,8 @@
 use cumulus_primitives_core::ParaId;
 
 use crate::{
-	AccountId, BalancesConfig, CollatorSelectionConfig, ParachainInfoConfig, PolkadotXcmConfig,
-	RuntimeGenesisConfig, SessionConfig, SessionKeys, SudoConfig, EXISTENTIAL_DEPOSIT,
+	AccountId, BalancesConfig, CollatorSelectionConfig, ParachainInfoConfig, PolkadotXcmConfig, RuntimeGenesisConfig,
+	SessionConfig, SessionKeys, SudoConfig, EXISTENTIAL_DEPOSIT,
 };
 use alloc::{vec, vec::Vec};
 use parachains_common::{genesis_config_helpers::*, AuraId};
@@ -28,11 +28,7 @@ fn testnet_genesis(
 ) -> Value {
 	let config = RuntimeGenesisConfig {
 		balances: BalancesConfig {
-			balances: endowed_accounts
-				.iter()
-				.cloned()
-				.map(|k| (k, 1u128 << 60))
-				.collect::<Vec<_>>(),
+			balances: endowed_accounts.iter().cloned().map(|k| (k, 1u128 << 60)).collect::<Vec<_>>(),
 		},
 		parachain_info: ParachainInfoConfig { parachain_id: id, ..Default::default() },
 		collator_selection: CollatorSelectionConfig {
@@ -53,10 +49,7 @@ fn testnet_genesis(
 				.collect::<Vec<_>>(),
 			..Default::default()
 		},
-		polkadot_xcm: PolkadotXcmConfig {
-			safe_xcm_version: Some(SAFE_XCM_VERSION),
-			..Default::default()
-		},
+		polkadot_xcm: PolkadotXcmConfig { safe_xcm_version: Some(SAFE_XCM_VERSION), ..Default::default() },
 		sudo: SudoConfig { key: Some(root) },
 		..Default::default()
 	};
@@ -68,14 +61,8 @@ fn local_testnet_genesis() -> Value {
 	testnet_genesis(
 		// initial collators.
 		vec![
-			(
-				get_account_id_from_seed::<sr25519::Public>("Alice"),
-				get_collator_keys_from_seed::<AuraId>("Alice"),
-			),
-			(
-				get_account_id_from_seed::<sr25519::Public>("Bob"),
-				get_collator_keys_from_seed::<AuraId>("Bob"),
-			),
+			(get_account_id_from_seed::<sr25519::Public>("Alice"), get_collator_keys_from_seed::<AuraId>("Alice")),
+			(get_account_id_from_seed::<sr25519::Public>("Bob"), get_collator_keys_from_seed::<AuraId>("Bob")),
 		],
 		vec![
 			get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -100,14 +87,8 @@ fn development_config_genesis() -> Value {
 	testnet_genesis(
 		// initial collators.
 		vec![
-			(
-				get_account_id_from_seed::<sr25519::Public>("Alice"),
-				get_collator_keys_from_seed::<AuraId>("Alice"),
-			),
-			(
-				get_account_id_from_seed::<sr25519::Public>("Bob"),
-				get_collator_keys_from_seed::<AuraId>("Bob"),
-			),
+			(get_account_id_from_seed::<sr25519::Public>("Alice"), get_collator_keys_from_seed::<AuraId>("Alice")),
+			(get_account_id_from_seed::<sr25519::Public>("Bob"), get_collator_keys_from_seed::<AuraId>("Bob")),
 		],
 		vec![
 			get_account_id_from_seed::<sr25519::Public>("Alice"),
@@ -135,11 +116,7 @@ pub fn get_preset(id: &PresetId) -> Option<vec::Vec<u8>> {
 		Ok(sp_genesis_builder::DEV_RUNTIME_PRESET) => development_config_genesis(),
 		_ => return None,
 	};
-	Some(
-		serde_json::to_string(&patch)
-			.expect("serialization to json is expected to work. qed.")
-			.into_bytes(),
-	)
+	Some(serde_json::to_string(&patch).expect("serialization to json is expected to work. qed.").into_bytes())
 }
 
 /// List of supported presets.

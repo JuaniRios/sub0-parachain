@@ -17,9 +17,8 @@ use cumulus_client_consensus_aura::collators::lookahead::{self as aura, Params a
 use cumulus_client_consensus_common::ParachainBlockImport as TParachainBlockImport;
 use cumulus_client_consensus_proposer::Proposer;
 use cumulus_client_service::{
-	build_network, build_relay_chain_interface, prepare_node_config, start_relay_chain_tasks,
-	BuildNetworkParams, CollatorSybilResistance, DARecoveryProfile, ParachainHostFunctions,
-	StartRelayChainTasksParams,
+	build_network, build_relay_chain_interface, prepare_node_config, start_relay_chain_tasks, BuildNetworkParams,
+	CollatorSybilResistance, DARecoveryProfile, ParachainHostFunctions, StartRelayChainTasksParams,
 };
 #[docify::export(cumulus_primitives)]
 use cumulus_primitives_core::{
@@ -189,12 +188,8 @@ fn start_consensus(
 
 	let proposer = Proposer::new(proposer_factory);
 
-	let collator_service = CollatorService::new(
-		client.clone(),
-		Arc::new(task_manager.spawn_handle()),
-		announce_block,
-		client.clone(),
-	);
+	let collator_service =
+		CollatorService::new(client.clone(), Arc::new(task_manager.spawn_handle()), announce_block, client.clone());
 
 	let params = AuraParams {
 		create_inherent_data_providers: move |_, ()| async move { Ok(()) },
@@ -202,9 +197,7 @@ fn start_consensus(
 		para_client: client.clone(),
 		para_backend: backend,
 		relay_client: relay_chain_interface,
-		code_hash_provider: move |block_hash| {
-			client.code_at(block_hash).ok().map(|c| ValidationCode::from(c).hash())
-		},
+		code_hash_provider: move |block_hash| client.code_at(block_hash).ok().map(|c| ValidationCode::from(c).hash()),
 		keystore,
 		collator_key,
 		para_id,
@@ -215,9 +208,7 @@ fn start_consensus(
 		authoring_duration: Duration::from_millis(2000),
 		reinitialize: false,
 	};
-	let fut = aura::run::<Block, sp_consensus_aura::sr25519::AuthorityPair, _, _, _, _, _, _, _, _>(
-		params,
-	);
+	let fut = aura::run::<Block, sp_consensus_aura::sr25519::AuthorityPair, _, _, _, _, _, _, _, _>(params);
 	task_manager.spawn_essential_handle().spawn("aura", None, fut);
 
 	Ok(())
@@ -238,11 +229,10 @@ pub async fn start_parachain_node(
 	let (block_import, mut telemetry, telemetry_worker_handle) = params.other;
 
 	let prometheus_registry = parachain_config.prometheus_registry().cloned();
-	let net_config = sc_network::config::FullNetworkConfiguration::<
-		_,
-		_,
-		sc_network::NetworkWorker<Block, Hash>,
-	>::new(&parachain_config.network, prometheus_registry.clone());
+	let net_config = sc_network::config::FullNetworkConfiguration::<_, _, sc_network::NetworkWorker<Block, Hash>>::new(
+		&parachain_config.network,
+		prometheus_registry.clone(),
+	);
 
 	let client = params.client.clone();
 	let backend = params.backend.clone();
@@ -289,9 +279,7 @@ pub async fn start_parachain_node(
 				runtime_api_provider: client.clone(),
 				keystore: Some(params.keystore_container.keystore()),
 				offchain_db: backend.offchain_storage(),
-				transaction_pool: Some(OffchainTransactionPoolFactory::new(
-					transaction_pool.clone(),
-				)),
+				transaction_pool: Some(OffchainTransactionPoolFactory::new(transaction_pool.clone())),
 				network_provider: Arc::new(network.clone()),
 				is_validator: parachain_config.role.is_authority(),
 				enable_http_requests: false,
@@ -307,8 +295,7 @@ pub async fn start_parachain_node(
 		let transaction_pool = transaction_pool.clone();
 
 		Box::new(move |_| {
-			let deps =
-				crate::rpc::FullDeps { client: client.clone(), pool: transaction_pool.clone() };
+			let deps = crate::rpc::FullDeps { client: client.clone(), pool: transaction_pool.clone() };
 
 			crate::rpc::create_full(deps).map_err(Into::into)
 		})
@@ -336,10 +323,7 @@ pub async fn start_parachain_node(
 		// requirements for a para-chain are dictated by its relay-chain.
 		match SUBSTRATE_REFERENCE_HARDWARE.check_hardware(&hwbench, false) {
 			Err(err) if validator => {
-				log::warn!(
-				"⚠️  The hardware does not meet the minimal requirements {} for role 'Authority'.",
-				err
-			);
+				log::warn!("⚠️  The hardware does not meet the minimal requirements {} for role 'Authority'.", err);
 			},
 			_ => {},
 		}
@@ -361,9 +345,8 @@ pub async fn start_parachain_node(
 
 	let relay_chain_slot_duration = Duration::from_secs(6);
 
-	let overseer_handle = relay_chain_interface
-		.overseer_handle()
-		.map_err(|e| sc_service::Error::Application(Box::new(e)))?;
+	let overseer_handle =
+		relay_chain_interface.overseer_handle().map_err(|e| sc_service::Error::Application(Box::new(e)))?;
 
 	start_relay_chain_tasks(StartRelayChainTasksParams {
 		client: client.clone(),
@@ -371,11 +354,7 @@ pub async fn start_parachain_node(
 		para_id,
 		relay_chain_interface: relay_chain_interface.clone(),
 		task_manager: &mut task_manager,
-		da_recovery_profile: if validator {
-			DARecoveryProfile::Collator
-		} else {
-			DARecoveryProfile::FullNode
-		},
+		da_recovery_profile: if validator { DARecoveryProfile::Collator } else { DARecoveryProfile::FullNode },
 		import_queue: import_queue_service,
 		relay_chain_slot_duration,
 		recovery_handle: Box::new(overseer_handle.clone()),

@@ -4,8 +4,8 @@ use frame_benchmarking_cli::{BenchmarkCmd, SUBSTRATE_REFERENCE_HARDWARE};
 use log::info;
 use parachain_template_runtime::Block;
 use sc_cli::{
-	ChainSpec, CliConfiguration, DefaultConfigurationValues, ImportParams, KeystoreParams,
-	NetworkParams, Result, RpcEndpoint, SharedParams, SubstrateCli,
+	ChainSpec, CliConfiguration, DefaultConfigurationValues, ImportParams, KeystoreParams, NetworkParams, Result,
+	RpcEndpoint, SharedParams, SubstrateCli,
 };
 use sc_service::config::{BasePath, PrometheusConfig};
 
@@ -122,14 +122,10 @@ pub fn run() -> Result<()> {
 			})
 		},
 		Some(Subcommand::ExportBlocks(cmd)) => {
-			construct_async_run!(|components, cli, cmd, config| {
-				Ok(cmd.run(components.client, config.database))
-			})
+			construct_async_run!(|components, cli, cmd, config| { Ok(cmd.run(components.client, config.database)) })
 		},
 		Some(Subcommand::ExportState(cmd)) => {
-			construct_async_run!(|components, cli, cmd, config| {
-				Ok(cmd.run(components.client, config.chain_spec))
-			})
+			construct_async_run!(|components, cli, cmd, config| { Ok(cmd.run(components.client, config.chain_spec)) })
 		},
 		Some(Subcommand::ImportBlocks(cmd)) => {
 			construct_async_run!(|components, cli, cmd, config| {
@@ -150,12 +146,9 @@ pub fn run() -> Result<()> {
 					[RelayChainCli::executable_name()].iter().chain(cli.relay_chain_args.iter()),
 				);
 
-				let polkadot_config = SubstrateCli::create_configuration(
-					&polkadot_cli,
-					&polkadot_cli,
-					config.tokio_handle.clone(),
-				)
-				.map_err(|err| format!("Relay chain argument error: {}", err))?;
+				let polkadot_config =
+					SubstrateCli::create_configuration(&polkadot_cli, &polkadot_cli, config.tokio_handle.clone())
+						.map_err(|err| format!("Relay chain argument error: {}", err))?;
 
 				cmd.run(config, polkadot_config)
 			})
@@ -181,7 +174,11 @@ pub fn run() -> Result<()> {
 			match cmd {
 				BenchmarkCmd::Pallet(cmd) =>
 					if cfg!(feature = "runtime-benchmarks") {
-						runner.sync_run(|config| cmd.run_with_spec::<sp_runtime::traits::HashingFor<Block>, ReclaimHostFunctions>(Some(config.chain_spec)))
+						runner.sync_run(|config| {
+							cmd.run_with_spec::<sp_runtime::traits::HashingFor<Block>, ReclaimHostFunctions>(Some(
+								config.chain_spec,
+							))
+						})
 					} else {
 						Err("Benchmarking wasn't enabled when building the node. \
 					You can enable it with `--features runtime-benchmarks`."
@@ -220,10 +217,7 @@ pub fn run() -> Result<()> {
 				let hwbench = (!cli.no_hardware_benchmarks)
 					.then_some(config.database.path().map(|database_path| {
 						let _ = std::fs::create_dir_all(database_path);
-						sc_sysinfo::gather_hwbench(
-							Some(database_path),
-							&SUBSTRATE_REFERENCE_HARDWARE,
-						)
+						sc_sysinfo::gather_hwbench(Some(database_path), &SUBSTRATE_REFERENCE_HARDWARE)
 					}))
 					.flatten();
 
@@ -239,22 +233,15 @@ pub fn run() -> Result<()> {
 				let id = ParaId::from(para_id);
 
 				let tokio_handle = config.tokio_handle.clone();
-				let polkadot_config =
-					SubstrateCli::create_configuration(&polkadot_cli, &polkadot_cli, tokio_handle)
-						.map_err(|err| format!("Relay chain argument error: {}", err))?;
+				let polkadot_config = SubstrateCli::create_configuration(&polkadot_cli, &polkadot_cli, tokio_handle)
+					.map_err(|err| format!("Relay chain argument error: {}", err))?;
 
 				info!("Is collating: {}", if config.role.is_authority() { "yes" } else { "no" });
 
-				crate::service::start_parachain_node(
-					config,
-					polkadot_config,
-					collator_options,
-					id,
-					hwbench,
-				)
-				.await
-				.map(|r| r.0)
-				.map_err(Into::into)
+				crate::service::start_parachain_node(config, polkadot_config, collator_options, id, hwbench)
+					.await
+					.map(|r| r.0)
+					.map_err(Into::into)
 			})
 		},
 	}
@@ -292,10 +279,7 @@ impl CliConfiguration<Self> for RelayChainCli {
 	}
 
 	fn base_path(&self) -> Result<Option<BasePath>> {
-		Ok(self
-			.shared_params()
-			.base_path()?
-			.or_else(|| self.base_path.clone().map(Into::into)))
+		Ok(self.shared_params().base_path()?.or_else(|| self.base_path.clone().map(Into::into)))
 	}
 
 	fn rpc_addr(&self, default_listen_port: u16) -> Result<Option<Vec<RpcEndpoint>>> {
@@ -367,10 +351,7 @@ impl CliConfiguration<Self> for RelayChainCli {
 		self.base.base.announce_block()
 	}
 
-	fn telemetry_endpoints(
-		&self,
-		chain_spec: &Box<dyn ChainSpec>,
-	) -> Result<Option<sc_telemetry::TelemetryEndpoints>> {
+	fn telemetry_endpoints(&self, chain_spec: &Box<dyn ChainSpec>) -> Result<Option<sc_telemetry::TelemetryEndpoints>> {
 		self.base.base.telemetry_endpoints(chain_spec)
 	}
 
