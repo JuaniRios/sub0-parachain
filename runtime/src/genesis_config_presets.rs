@@ -1,8 +1,9 @@
 use cumulus_primitives_core::ParaId;
 
 use crate::{
-	AccountId, BalancesConfig, CollatorSelectionConfig, ParachainInfoConfig, PolkadotXcmConfig, RuntimeGenesisConfig,
-	SessionConfig, SessionKeys, SudoConfig, EXISTENTIAL_DEPOSIT,
+	configs::{consts::EXISTENTIAL_DEPOSIT, types::AccountId},
+	BalancesConfig, CollatorSelectionConfig, ParachainInfoConfig, PolkadotXcmConfig, RuntimeGenesisConfig,
+	SessionConfig, SessionKeys, SudoConfig,
 };
 use alloc::{vec, vec::Vec};
 use parachains_common::{genesis_config_helpers::*, AuraId};

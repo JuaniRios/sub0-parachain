@@ -7,7 +7,7 @@ use cumulus_client_cli::CollatorOptions;
 // Local Runtime Types
 use parachain_template_runtime::{
 	apis::RuntimeApi,
-	opaque::{Block, Hash},
+	configs::types::opaque::{Block, Hash},
 };
 
 // Cumulus Imports

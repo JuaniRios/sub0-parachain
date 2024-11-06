@@ -42,8 +42,12 @@ use sp_version::RuntimeVersion;
 
 // Local module imports
 use super::{
-	AccountId, Balance, Block, ConsensusHook, Executive, InherentDataExt, Nonce, ParachainSystem, Runtime, RuntimeCall,
-	RuntimeGenesisConfig, SessionKeys, System, TransactionPayment, SLOT_DURATION, VERSION,
+	InherentDataExt, ParachainSystem, Runtime, RuntimeCall, RuntimeGenesisConfig, SessionKeys, System,
+	TransactionPayment, VERSION,
+};
+use crate::configs::{
+	consts::SLOT_DURATION,
+	types::{AccountId, Balance, Block, ConsensusHook, Executive, Nonce},
 };
 
 // we move some impls outside so we can easily use them with `docify`.

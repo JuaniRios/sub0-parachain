@@ -46,6 +46,7 @@
 //! Run `cargo doc --package pallet-template --open` to view this pallet's documentation.
 
 #![cfg_attr(not(feature = "std"), no_std)]
+#![allow(unreachable_patterns)]
 
 pub use pallet::*;
 

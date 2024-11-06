@@ -75,6 +75,7 @@ cumulus-primitives-storage-weight-reclaim.workspace = true
 pallet-collator-selection.workspace = true
 parachains-common.workspace = true
 parachain-info.workspace = true
+pallet-assets.workspace = true
 
 [features]
 default = ["std"]
